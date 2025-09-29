@@ -22,7 +22,7 @@ jobs:
       - name: Build tests
         run: cmake . && cmake --build tests
 
-      - name: run tests
+      - name: Run tests
         run: tests/test --quiet --jobs 0 --xml=results.xml
 
       - name: Publish Test Results
