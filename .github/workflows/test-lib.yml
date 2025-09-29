@@ -1,32 +1,22 @@
-name: 'Test lib implementation'
-
-on:
-  push:
-    branches:
+trigger:
+  branches:
+    include:
       - feedback
 
-jobs:
-  test-all:
-    runs-on: ubuntu-22.04
+pool:
+  vmImage: 'ubuntu-latest'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Get criterion
-        run: sudo apt-get install libcriterion-dev -y
-
-      - name: Get Cmake
-        uses: lukka/get-cmake@latest
-
-      - name: Build tests
-        run: cmake . && cmake --build tests
-
-      - name: Run tests
-        run: tests/test --quiet --jobs 0 --xml=results.xml
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: always()
-        with:
-          files: "results.xml"
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildJob
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.x'
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+          - script: |
+              echo "Running build"
+              dotnet build
+            displayName: 'Run build'
